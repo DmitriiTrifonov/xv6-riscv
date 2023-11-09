@@ -3,11 +3,20 @@
 #include "user/user.h"
 
 int main(int argc, char *argv[]) {
+    int p[2];
+    char buffer[10];
+    pipe(p);
+
     int pid = fork();
-    if(pid > 0){
-        printf("pid: %s\n", pid);
+    if (pid == 0) {
+        write(p[1], "ping", 4);
+        read(p[0], buffer, 4);
+        printf("%d: recieved %s\n", getpid(), buffer);
     } else {
-        printf("parent\n");
+        wait(0);
+        write(p[1], "pong", 4);
+        read(p[0], buffer, 4);
+        printf("%d: recieved %s\n", getpid(), buffer);
     }
     exit(0);
 }
